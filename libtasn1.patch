@@ -1,0 +1,25 @@
+diff --git a/Makefile.am b/Makefile.am
+index 5a57fea..24b37c2 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -28,7 +28,7 @@ EXTRA_DIST = windows/asn1-parser/asn1-parser.vcproj			\
+ 	windows/test-tree/test-tree.vcproj windows/libtasn14win.mk
+ EXTRA_DIST += cfg.mk maint.mk CONTRIBUTING.md README.md
+ 
+-SUBDIRS = lib src fuzz tests
++SUBDIRS = lib src fuzz
+ 
+ if ENABLE_DOC
+ SUBDIRS += doc examples
+diff --git a/configure.ac b/configure.ac
+index 3d0b8d4..8bb89cd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -126,7 +126,6 @@ AC_CONFIG_FILES([
+   lib/libtasn1.pc
+   src/Makefile
+   src/gl/Makefile
+-  tests/Makefile
+ ])
+ AC_OUTPUT
+ 

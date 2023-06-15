@@ -1,0 +1,27 @@
+[submodule "dxvk"]
+	path = dxvk
+	url = https://github.com/doitsujin/dxvk.git
+[submodule "freetype"]
+	path = freetype
+	url = https://github.com/freetype/freetype
+[submodule "gnutls"]
+	path = gnutls
+	url = https://gitlab.com/gnutls/gnutls/
+[submodule "libev"]
+	path = libev
+	url = https://git.lighttpd.net/mirrors/libev
+[submodule "libtasn1"]
+	path = libtasn1
+	url = https://github.com/gnutls/libtasn1.git
+[submodule "mesa"]
+	path = mesa
+	url = https://gitlab.freedesktop.org/mesa/mesa
+[submodule "nettle"]
+	path = nettle
+	url = https://gitlab.com/gnutls/nettle.git
+[submodule "p11-kit"]
+	path = p11-kit
+	url = https://github.com/p11-glue/p11-kit
+[submodule "wine"]
+	path = wine
+	url = https://github.com/temp-fexline/wine.git
