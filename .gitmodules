@@ -24,4 +24,4 @@
 	url = https://github.com/p11-glue/p11-kit
 [submodule "wine"]
 	path = wine
-	url = https://github.com/temp-fexline/wine.git
+	url = git@github.com:temp-fexline/wine.git
