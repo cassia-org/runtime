@@ -3,18 +3,20 @@ project(proj LANGUAGES C CXX ASM VERSION 1.0)
 
 include(ExternalProject)
 
-
 set(OUTPUT_PREFIX_DIR ${CMAKE_BINARY_DIR}/prefix)
 set(WINETOOLS_PATH "" CACHE PATH "Path to wine tools built for the host (when cross compiling)")
 set(MINGW_SYSROOT_PATH "" CACHE PATH "Path to a mingw compiler sysroot built for the host")
 set(DLL_BUILD_ARCHITECTURES "" CACHE STRING "List of DLL architectures to build")
 
-string(REPLACE "-fstack-protector-strong" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-string(REPLACE "-D_FORTIFY_SOURCE=2" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
-set(CMAKE_ASM_FLAGS ${CMAKE_CXX_FLAGS})
+if (CMAKE_CXX_FLAGS)
+    # These flags break compilation of wine and libtasn1 and are set implictly by the android toolchain file
+    string(REPLACE "-fstack-protector-strong" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    string(REPLACE "-D_FORTIFY_SOURCE=2" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
+    set(CMAKE_ASM_FLAGS ${CMAKE_CXX_FLAGS})
+endif()
 
-set(MINGW_COMMAND "${CMAKE_COMMAND}" -E env "PATH=$ENV{PATH}:${MINGW_SYSROOT_PATH}/bin")
+
 if (CMAKE_CROSSCOMPILING)
   set(CROSS_COMPILER_TARGET_ARG "--target=${CMAKE_CXX_COMPILER_TARGET}")
   set(CROSS_COMPILER_SYSROOT_ARG "--sysroot=${CMAKE_SYSROOT}")
@@ -27,8 +29,27 @@ if (CMAKE_CROSSCOMPILING)
   set(wine_EXTRA_CONFIGURE_FLAGS "--with-wine-tools=${WINETOOLS_PATH}")
 endif()
 
+# Executes the appended program with MinGW compilers added to path
+set(MINGW_COMMAND "${CMAKE_COMMAND}" -E env "PATH=$ENV{PATH}:${MINGW_SYSROOT_PATH}/bin")
+
+
+set(MINGW_DLL_BUILD_TRIPLES "")
+string(REPLACE "," ";" DLL_BUILD_ARCHITECTURES_LIST ${DLL_BUILD_ARCHITECTURES})
+foreach(DLL_ARCH IN LISTS DLL_BUILD_ARCHITECTURES_LIST)
+  if (${DLL_ARCH} STREQUAL "aarch64")
+    list(APPEND MINGW_DLL_BUILD_TRIPLES "aarch64-w64-mingw32")
+  elseif(${DLL_ARCH} STREQUAL "x86_64")
+    list(APPEND MINGW_DLL_BUILD_TRIPLES "x86_64-w64-mingw32")
+  elseif(${DLL_ARCH} STREQUAL "i386")
+    list(APPEND MINGW_DLL_BUILD_TRIPLES "i686-w64-mingw32")
+  else()
+    message(FATAL_ERROR "Unsupported DLL build architecture")
+  endif()
+endforeach()
+message(${MINGW_DLL_BUILD_TRIPLES})
+
 set(COMPILER_SETTINGS
-  # Autotools strips target from CFLAGS so need to CC instead
+  # Autotools strips target from CFLAGS so need to use CC instead
   "CXX=${CMAKE_CXX_COMPILER_LAUNCHER} ${CMAKE_CXX_COMPILER} ${CROSS_COMPILER_TARGET_ARG}"
   "AS=${CMAKE_ASM_COMPILER} ${CROSS_COMPILER_TARGET_ARG}"
   "CPP=${CMAKE_C_COMPILER_LAUNCHER} ${CMAKE_C_COMPILER} ${CROSS_COMPILER_TARGET_ARG} -E"
@@ -48,7 +69,6 @@ set(COMPILER_SETTINGS
   "PKG_CONFIG=pkg-config"
   "x86_64_CC=${MINGW_SYSROOT_PATH}/bin/clang"
 )
-
 
 function(add_autotools_project name)
   cmake_parse_arguments(PARSE_ARGV 1 ARG "BUILD_ALWAYS" "MAKE_TARGET;INSTALL_TARGET" "PRE_CONFIGURE_COMMAND;DEPENDS;CONFIGURE_FLAGS")
@@ -75,11 +95,11 @@ function(add_autotools_project name)
   )
 endfunction()
 
-function(add_dll_meson_project_intl name arch cross_file prefix build_always configure_flags)
+function(add_dll_meson_project_intl name triple cross_file prefix build_always configure_flags)
   if (${configure_flags} STREQUAL " ")
     unset(configure_flags)
   endif()
-  ExternalProject_Add(${name}_${arch}
+  ExternalProject_Add(${name}_${triple}
     INSTALL_DIR         ${prefix}
     SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/${name}
     CONFIGURE_COMMAND   ${MINGW_COMMAND} meson setup ${configure_flags} --cross-file=${cross_file} --prefix=<INSTALL_DIR> . <SOURCE_DIR>
@@ -103,13 +123,13 @@ function(add_dll_meson_project name)
     set(ARG_CONFIGURE_FLAGS " ")
   endif()
 
-  foreach(DLL_ARCH IN LISTS DLL_BUILD_ARCHITECTURES)
-    set(DLL_ARCH_PREFIX "${OUTPUT_PREFIX_DIR}/dlls/${DLL_ARCH}")
-    set(DLL_ARCH_CROSS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/meson_cross_files/${DLL_ARCH}.txt")
+  foreach(DLL_TRIPLE IN LISTS MINGW_DLL_BUILD_TRIPLES)
+    set(DLL_TRIPLE_PREFIX "${OUTPUT_PREFIX_DIR}/dlls/${DLL_TRIPLE}")
+    set(DLL_TRIPLE_CROSS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/meson_cross_files/${DLL_TRIPLE}.txt")
     add_dll_meson_project_intl(${name}
-                               ${DLL_ARCH}
-                               ${DLL_ARCH_CROSS_FILE}
-                               ${DLL_ARCH_PREFIX}
+                               ${DLL_TRIPLE}
+                               ${DLL_TRIPLE_CROSS_FILE}
+                               ${DLL_TRIPLE_PREFIX}
                                ${ARG_BUILD_ALWAYS} 
                                ${ARG_CONFIGURE_FLAGS})
   endforeach()
@@ -135,7 +155,7 @@ add_autotools_project(gnutls
 add_autotools_project(wine
                       BUILD_ALWAYS
                       PRE_CONFIGURE_COMMAND autoreconf -i
-                      CONFIGURE_FLAGS --enable-win64 --enable-archs=aarch64,i386  --enable-wineandroid-drv ${wine_EXTRA_CONFIGURE_FLAGS}
+                      CONFIGURE_FLAGS --enable-win64 --enable-archs=${DLL_BUILD_ARCHITECTURES} ${wine_EXTRA_CONFIGURE_FLAGS}
                       DEPENDS gnutls freetype)
 add_dll_meson_project(mesa
                       CONFIGURE_FLAGS -Dgallium-drivers=zink
