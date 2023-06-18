@@ -29,9 +29,6 @@ if (CMAKE_CROSSCOMPILING)
   set(wine_EXTRA_CONFIGURE_FLAGS "--with-wine-tools=${WINETOOLS_PATH}")
 endif()
 
-# Executes the appended program with MinGW compilers added to path
-set(MINGW_COMMAND "${CMAKE_COMMAND}" -E env "PATH=$ENV{PATH}:${MINGW_SYSROOT_PATH}/bin")
-
 
 set(MINGW_DLL_BUILD_TRIPLES "")
 string(REPLACE "," ";" DLL_BUILD_ARCHITECTURES_LIST ${DLL_BUILD_ARCHITECTURES})
@@ -69,6 +66,9 @@ set(COMPILER_SETTINGS
   "PKG_CONFIG=pkg-config"
   "x86_64_CC=${MINGW_SYSROOT_PATH}/bin/clang"
 )
+
+# Executes the appended program with MinGW compilers added to path
+set(MINGW_COMMAND "${CMAKE_COMMAND}" -E env "PATH=$ENV{PATH}:${MINGW_SYSROOT_PATH}/bin" ${COMPILER_SETTINGS})
 
 function(add_autotools_project name)
   cmake_parse_arguments(PARSE_ARGV 1 ARG "BUILD_ALWAYS" "MAKE_TARGET;INSTALL_TARGET" "PRE_CONFIGURE_COMMAND;DEPENDS;CONFIGURE_FLAGS")
