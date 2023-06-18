@@ -84,9 +84,9 @@ function(add_autotools_project name)
     INSTALL_DIR         ${OUTPUT_PREFIX_DIR}
     SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/${name}
     DOWNLOAD_COMMAND    COMMAND cd <SOURCE_DIR> && ${ARG_PRE_CONFIGURE_COMMAND}
-    CONFIGURE_COMMAND   <SOURCE_DIR>/configure ${COMPILER_SETTINGS} --prefix=<INSTALL_DIR> --host=${CMAKE_C_COMPILER_TARGET} ${ARG_CONFIGURE_FLAGS}
-    BUILD_COMMAND       make -j ${ARG_MAKE_TARGET}
-    INSTALL_COMMAND     make prefix=<INSTALL_DIR> ${ARG_INSTALL_TARGET}
+    CONFIGURE_COMMAND   ${MINGW_COMMAND} <SOURCE_DIR>/configure ${COMPILER_SETTINGS} --prefix=<INSTALL_DIR> --host=${CMAKE_C_COMPILER_TARGET} ${ARG_CONFIGURE_FLAGS}
+    BUILD_COMMAND       ${MINGW_COMMAND} make -j ${ARG_MAKE_TARGET}
+    INSTALL_COMMAND     ${MINGW_COMMAND} make prefix=<INSTALL_DIR> ${ARG_INSTALL_TARGET}
     LOG_CONFIGURE       TRUE
     LOG_BUILD           TRUE
     LOG_INSTALL         TRUE
@@ -162,6 +162,3 @@ add_dll_meson_project(mesa
                       BUILD_ALWAYS)
 add_dll_meson_project(dxvk
                       BUILD_ALWAYS)
-add_library(proj SHARED test.c)
-
-
