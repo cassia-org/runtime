@@ -25,3 +25,6 @@
 [submodule "wine"]
 	path = wine
 	url = git@github.com:temp-fexline/wine.git
+[submodule "cassiapp/app/src/main/cpp/cassiasrv/Vulkan-Headers"]
+	path = cassiapp/app/src/main/cpp/cassiasrv/Vulkan-Headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers
