@@ -1,4 +1,19 @@
 cmake_minimum_required(VERSION 3.10.2)
+
+# Collect parameters to pass to any CMake subprojects
+# (https://cmake.org/pipermail/cmake/2018-January/067002.html)
+if (NOT EXTPROJ_CMAKE_ARGS)
+  get_cmake_property(vars CACHE_VARIABLES)
+  foreach(var ${vars})
+    get_property(currentHelpString CACHE "${var}" PROPERTY HELPSTRING)
+      if("${currentHelpString}" MATCHES "No help, variable specified on the command line." OR "${currentHelpString}" STREQUAL "")
+          # message("${var} = [${${var}}]  --  ${currentHelpString}") # uncomment to see the variables being processed
+          list(APPEND EXTPROJ_CMAKE_ARGS "-D${var}=${${var}}")
+      endif()
+  endforeach()
+  set(EXTPROJ_CMAKE_ARGS ${EXTPROJ_CMAKE_ARGS} CACHE STRING "comment")
+endif()
+
 project(proj LANGUAGES C CXX ASM VERSION 1.0)
 
 include(ExternalProject)
@@ -29,7 +44,6 @@ if (CMAKE_CROSSCOMPILING)
   set(wine_EXTRA_CONFIGURE_FLAGS "--with-wine-tools=${WINETOOLS_PATH}")
 endif()
 
-
 set(MINGW_DLL_BUILD_TRIPLES "")
 string(REPLACE "," ";" DLL_BUILD_ARCHITECTURES_LIST ${DLL_BUILD_ARCHITECTURES})
 foreach(DLL_ARCH IN LISTS DLL_BUILD_ARCHITECTURES_LIST)
@@ -43,7 +57,6 @@ foreach(DLL_ARCH IN LISTS DLL_BUILD_ARCHITECTURES_LIST)
     message(FATAL_ERROR "Unsupported DLL build architecture")
   endif()
 endforeach()
-message(${MINGW_DLL_BUILD_TRIPLES})
 
 set(COMPILER_SETTINGS
   # Autotools strips target from CFLAGS so need to use CC instead
@@ -94,6 +107,19 @@ function(add_autotools_project name)
     DEPENDS             ${ARG_DEPENDS}
   )
 endfunction()
+
+if (ANDROID)
+  ExternalProject_Add(libadrenotools
+    INSTALL_DIR         ${OUTPUT_PREFIX_DIR}
+    SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/libadrenotools
+    LOG_CONFIGURE       TRUE
+    LOG_BUILD           TRUE
+    LOG_INSTALL         TRUE
+    BUILD_ALWAYS        TRUE
+    CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
+  )
+endif()
 
 function(add_dll_meson_project_intl name triple cross_file prefix build_always configure_flags)
   if (${configure_flags} STREQUAL " ")

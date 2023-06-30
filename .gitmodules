@@ -28,3 +28,6 @@
 [submodule "cassiapp/app/src/main/cpp/cassiasrv/Vulkan-Headers"]
 	path = cassiapp/app/src/main/cpp/cassiasrv/Vulkan-Headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers
+[submodule "libadrenotools"]
+	path = libadrenotools
+	url = https://github.com/bylaws/libadrenotools
