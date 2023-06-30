@@ -31,3 +31,6 @@
 [submodule "libadrenotools"]
 	path = libadrenotools
 	url = https://github.com/bylaws/libadrenotools
+[submodule "FEX"]
+	path = FEX
+	url = git@github.com:temp-fexline/FEX.git
