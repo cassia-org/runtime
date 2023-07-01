@@ -24,7 +24,7 @@
 	url = https://github.com/p11-glue/p11-kit
 [submodule "wine"]
 	path = wine
-	url = git@github.com:temp-fexline/wine.git
+	url = git@github.com:cassia-org/wine.git
 [submodule "cassiapp/app/src/main/cpp/cassiasrv/Vulkan-Headers"]
 	path = cassiapp/app/src/main/cpp/cassiasrv/Vulkan-Headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers
@@ -33,4 +33,4 @@
 	url = https://github.com/bylaws/libadrenotools
 [submodule "FEX"]
 	path = FEX
-	url = git@github.com:temp-fexline/FEX.git
+	url = git@github.com:cassia-org/FEX.git
