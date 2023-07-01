@@ -1,0 +1,21 @@
+diff --git a/configure.ac b/configure.ac
+index c8862f31..2cf9b9ef 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -424,15 +424,7 @@ if test "x$ABI" != xstandard ; then
+       # compiling. We use lib${ABI} if /usr/lib${ABI} exists and
+       # appears to not be a symlink to a different name.
+       *:linux*:32|*:linux*:64)
+-	if test "$cross_compiling" = yes ; then
+-          AC_MSG_WARN([Cross compiling for linux. Can't guess if libraries go in lib${ABI} or lib.]); dnl '
+-	else
+-	  # The dash builtin pwd tries to be "helpful" and remember
+-	  # symlink names. Use -P option, and hope it's portable enough.
+-	  test -d /usr/lib${ABI} \
+-	    && (cd /usr/lib${ABI} && pwd -P | grep >/dev/null "/lib${ABI}"'$') \
+-	    && libdir='${exec_prefix}/'"lib${ABI}"
+-	fi
++	libdir='${exec_prefix}/lib'
+ 	;;
+       # On freebsd, it seems 32-bit libraries are in lib32,
+       # and 64-bit in lib. Don't know about "kfreebsd", does
