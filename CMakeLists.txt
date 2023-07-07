@@ -27,6 +27,7 @@ if (CMAKE_CXX_FLAGS)
     # These flags break compilation of wine and libtasn1 and are set implictly by the android toolchain file
     string(REPLACE "-fstack-protector-strong" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     string(REPLACE "-D_FORTIFY_SOURCE=2" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    string(REPLACE "-Werror=format-security" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     set(CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
     set(CMAKE_ASM_FLAGS ${CMAKE_CXX_FLAGS})
 endif()
