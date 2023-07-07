@@ -82,7 +82,7 @@ set(COMPILER_SETTINGS
 )
 
 # Executes the appended program with MinGW compilers added to path
-set(MINGW_COMMAND "${CMAKE_COMMAND}" -E env "PATH=$ENV{PATH}:${MINGW_SYSROOT_PATH}/bin" ${COMPILER_SETTINGS})
+set(MINGW_COMMAND "${CMAKE_COMMAND}" -E env "PATH=$ENV{PATH}:${MINGW_SYSROOT_PATH}/bin")
 
 function(add_autotools_project name)
   cmake_parse_arguments(PARSE_ARGV 1 ARG "BUILD_ALWAYS" "MAKE_TARGET;INSTALL_TARGET" "PRE_CONFIGURE_COMMAND;DEPENDS;CONFIGURE_FLAGS")
