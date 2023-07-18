@@ -120,6 +120,17 @@ if (ANDROID)
     CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
   )
+  
+  ExternalProject_Add(libaresolv
+    INSTALL_DIR         ${OUTPUT_PREFIX_DIR}
+    SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/libaresolv
+    LOG_CONFIGURE       TRUE
+    LOG_BUILD           TRUE
+    LOG_INSTALL         TRUE
+    BUILD_ALWAYS        TRUE
+    CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
+  )
 endif()
 
 function(add_dll_meson_project_intl name triple cross_file prefix build_always configure_flags)
