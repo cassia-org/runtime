@@ -109,30 +109,6 @@ function(add_autotools_project name)
   )
 endfunction()
 
-if (ANDROID)
-  ExternalProject_Add(libadrenotools
-    INSTALL_DIR         ${OUTPUT_PREFIX_DIR}
-    SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/libadrenotools
-    LOG_CONFIGURE       TRUE
-    LOG_BUILD           TRUE
-    LOG_INSTALL         TRUE
-    BUILD_ALWAYS        TRUE
-    CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
-  )
-  
-  ExternalProject_Add(libaresolv
-    INSTALL_DIR         ${OUTPUT_PREFIX_DIR}
-    SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/libaresolv
-    LOG_CONFIGURE       TRUE
-    LOG_BUILD           TRUE
-    LOG_INSTALL         TRUE
-    BUILD_ALWAYS        TRUE
-    CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
-  )
-endif()
-
 function(add_dll_meson_project_intl name triple cross_file prefix build_always configure_flags)
   if (${configure_flags} STREQUAL " ")
     unset(configure_flags)
@@ -140,7 +116,7 @@ function(add_dll_meson_project_intl name triple cross_file prefix build_always c
   ExternalProject_Add(${name}_${triple}
     INSTALL_DIR         ${prefix}
     SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/${name}
-    CONFIGURE_COMMAND   ${MINGW_COMMAND} meson setup ${configure_flags} --cross-file=${cross_file} --prefix=<INSTALL_DIR> . <SOURCE_DIR>
+    CONFIGURE_COMMAND   ${MINGW_COMMAND} meson setup --strip --buildtype release ${configure_flags} --cross-file=${cross_file} --prefix=<INSTALL_DIR> . <SOURCE_DIR>
     BUILD_COMMAND       ${MINGW_COMMAND} meson compile
     INSTALL_COMMAND     ${MINGW_COMMAND} meson install --no-rebuild
     LOG_CONFIGURE       TRUE
@@ -168,7 +144,7 @@ function(add_dll_meson_project name)
                                ${DLL_TRIPLE}
                                ${DLL_TRIPLE_CROSS_FILE}
                                ${DLL_TRIPLE_PREFIX}
-                               ${ARG_BUILD_ALWAYS} 
+                               ${ARG_BUILD_ALWAYS}
                                ${ARG_CONFIGURE_FLAGS})
   endforeach()
 endfunction()
@@ -193,10 +169,48 @@ add_autotools_project(gnutls
 add_autotools_project(wine
                       BUILD_ALWAYS
                       PRE_CONFIGURE_COMMAND autoreconf -i
-                      CONFIGURE_FLAGS --enable-win64 --enable-archs=${DLL_BUILD_ARCHITECTURES} ${wine_EXTRA_CONFIGURE_FLAGS}
+                      CONFIGURE_FLAGS --enable-archs=${DLL_BUILD_ARCHITECTURES} ${wine_EXTRA_CONFIGURE_FLAGS}
                       DEPENDS gnutls freetype)
 add_dll_meson_project(mesa
                       CONFIGURE_FLAGS -Dgallium-drivers=zink
                       BUILD_ALWAYS)
 add_dll_meson_project(dxvk
                       BUILD_ALWAYS)
+
+if (ANDROID)
+  ExternalProject_Add(libadrenotools
+    INSTALL_DIR         ${OUTPUT_PREFIX_DIR}
+    SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/libadrenotools
+    LOG_CONFIGURE       TRUE
+    LOG_BUILD           TRUE
+    LOG_INSTALL         TRUE
+    BUILD_ALWAYS        TRUE
+    CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
+  )
+
+  ExternalProject_Add(libaresolv
+    INSTALL_DIR         ${OUTPUT_PREFIX_DIR}
+    SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/libaresolv
+    LOG_CONFIGURE       TRUE
+    LOG_BUILD           TRUE
+    LOG_INSTALL         TRUE
+    BUILD_ALWAYS        TRUE
+    CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
+  )
+endif()
+
+if ("aarch64-w64-mingw32" IN_LIST MINGW_DLL_BUILD_TRIPLES)
+  set(DLL_TRIPLE "aarch64-w64-mingw32")
+  set(DLL_TRIPLE_PREFIX "${OUTPUT_PREFIX_DIR}/dlls/${DLL_TRIPLE}")
+
+  ExternalProject_Add(FEX_${DLL_TRIPLE}
+    INSTALL_DIR         ${DLL_TRIPLE_PREFIX}
+    SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/FEX
+    CMAKE_ARGS          -DCMAKE_TOOLCHAIN_FILE=${CMAKE_CURRENT_SOURCE_DIR}/FEX/toolchain_mingw.cmake -DENABLE_JEMALLOC=0 -DENABLE_JEMALLOC_GLIBC_ALLOC=0 -DMINGW_TRIPLE=${DLL_TRIPLE} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_TESTS=False -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+    CMAKE_COMMAND       ${MINGW_COMMAND} cmake
+    LOG_CONFIGURE       TRUE
+    LOG_BUILD           TRUE
+    LOG_INSTALL         TRUE
+    BUILD_ALWAYS        TRUE
+  )
+endif()
