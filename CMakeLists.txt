@@ -148,7 +148,6 @@ function(add_dll_meson_project name)
                                ${ARG_CONFIGURE_FLAGS})
   endforeach()
 endfunction()
-      
 
 add_autotools_project(freetype PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh)
 add_autotools_project(libtasn1 PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh
@@ -187,6 +186,8 @@ if (ANDROID)
     BUILD_ALWAYS        TRUE
     CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
   )
+
+  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/metadata.json DESTINATION ${OUTPUT_PREFIX_DIR})
 endif()
 
 if ("aarch64-w64-mingw32" IN_LIST MINGW_DLL_BUILD_TRIPLES)

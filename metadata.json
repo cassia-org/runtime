@@ -1,0 +1,24 @@
+{
+    "uuid": "00000000-0000-0000-0000-000000000000",
+    "name": "Cassia Runtime",
+    "version": 1,
+    "author": "Cassia Team",
+    "description": "The official runtime for Cassia",
+    "prefixLinks": {
+        "dlls/aarch64-w64-mingw32/bin/libwow64fex.dll": "drive_c/windows/system32/libwow64fex.dll",
+        "dlls/aarch64-w64-mingw32/bin/d3d9.dll": "drive_c/windows/system32/d3d9.dll",
+        "dlls/aarch64-w64-mingw32/bin/d3d10core.dll": "drive_c/windows/system32/d3d10core.dll",
+        "dlls/aarch64-w64-mingw32/bin/d3d11.dll": "drive_c/windows/system32/d3d11.dll",
+        "dlls/aarch64-w64-mingw32/bin/dxgi.dll": "drive_c/windows/system32/dxgi.dll",
+        "dlls/aarch64-w64-mingw32/bin/libgallium_wgl.dll": "drive_c/windows/system32/libgallium_wgl.dll",
+        "dlls/aarch64-w64-mingw32/bin/libz.dll": "drive_c/windows/system32/libz.dll",
+        "dlls/aarch64-w64-mingw32/bin/opengl32.dll": "drive_c/windows/system32/opengl32.dll",
+        "dlls/i686-w64-mingw32/bin/d3d9.dll": "drive_c/windows/syswow64/d3d9.dll",
+        "dlls/i686-w64-mingw32/bin/d3d10core.dll": "drive_c/windows/syswow64/d3d10core.dll",
+        "dlls/i686-w64-mingw32/bin/d3d11.dll": "drive_c/windows/syswow64/d3d11.dll",
+        "dlls/i686-w64-mingw32/bin/dxgi.dll": "drive_c/windows/syswow64/dxgi.dll",
+        "dlls/i686-w64-mingw32/bin/libgallium_wgl.dll": "drive_c/windows/syswow64/libgallium_wgl.dll",
+        "dlls/i686-w64-mingw32/bin/libz.dll": "drive_c/windows/syswow64/libz.dll",
+        "dlls/i686-w64-mingw32/bin/opengl32.dll": "drive_c/windows/syswow64/opengl32.dll"
+    }
+}
