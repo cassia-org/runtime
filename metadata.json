@@ -5,6 +5,7 @@
     "author": "Cassia Team",
     "description": "The official runtime for Cassia",
     "prefixLinks": {
+        "runtime.reg": "runtime.reg",
         "dlls/aarch64-w64-mingw32/bin/libwow64fex.dll": "drive_c/windows/system32/libwow64fex.dll",
         "dlls/aarch64-w64-mingw32/bin/d3d9.dll": "drive_c/windows/system32/d3d9.dll",
         "dlls/aarch64-w64-mingw32/bin/d3d10core.dll": "drive_c/windows/system32/d3d10core.dll",

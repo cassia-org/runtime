@@ -1,0 +1,6 @@
+WINE REGISTRY Version 2
+;; Cassia runtime registry with all keys relative to REGISTRY.
+;; This will automatically be imported into the wine registry on startup.
+
+[Machine\\Software\\Microsoft\\Wow64\\x86]
+@="libwow64fex.dll"

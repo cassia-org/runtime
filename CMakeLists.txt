@@ -149,6 +149,12 @@ function(add_dll_meson_project name)
   endforeach()
 endfunction()
 
+function(add_copy_command source destination)
+  add_custom_command(OUTPUT ${destination}
+                     COMMAND ${CMAKE_COMMAND} -E copy ${source} ${destination}
+                     DEPENDS ${source})
+endfunction()
+
 add_autotools_project(freetype PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh)
 add_autotools_project(libtasn1 PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh
                       CONFIGURE_FLAGS --disable-doc)
@@ -187,7 +193,8 @@ if (ANDROID)
     CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
   )
 
-  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/metadata.json DESTINATION ${OUTPUT_PREFIX_DIR})
+  add_copy_command(${CMAKE_CURRENT_SOURCE_DIR}/metadata.json ${OUTPUT_PREFIX_DIR}/metadata.json)
+  add_copy_command(${CMAKE_CURRENT_SOURCE_DIR}/runtime.reg ${OUTPUT_PREFIX_DIR}/runtime.reg)
 endif()
 
 if ("aarch64-w64-mingw32" IN_LIST MINGW_DLL_BUILD_TRIPLES)
