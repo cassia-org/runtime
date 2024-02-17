@@ -1,0 +1,43 @@
+From a6afe0cc2882e29bfb8510bd31f1d1e70efd7d8a Mon Sep 17 00:00:00 2001
+From: Mark Collins <pixelyion@protonmail.com>
+Date: Sat, 17 Feb 2024 14:44:07 +0000
+Subject: [PATCH 1/2] configure,m4: Remove explicit -lpthread
+
+Android's bionic libc has pthread functions implicitly, it doesn't
+need to be linked explicitly.
+
+Signed-off-by: Mark Collins <pixelyion@protonmail.com>
+---
+ configure.ac  | 2 +-
+ utils/alsa.m4 | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 3f238302..9eb75780 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -276,7 +276,7 @@ AC_ARG_WITH(pthread,
+ if test "$have_pthread" = "yes"; then
+   AC_CHECK_LIB([pthread], [pthread_join], [HAVE_LIBPTHREAD="yes"])
+   if test "$HAVE_LIBPTHREAD" = "yes"; then
+-    ALSA_DEPLIBS="$ALSA_DEPLIBS -lpthread"
++    ALSA_DEPLIBS="$ALSA_DEPLIBS"
+     AC_DEFINE([HAVE_LIBPTHREAD], 1, [Have libpthread])
+   fi
+ else
+diff --git a/utils/alsa.m4 b/utils/alsa.m4
+index 461d8d5e..bbf01453 100644
+--- a/utils/alsa.m4
++++ b/utils/alsa.m4
+@@ -63,7 +63,7 @@ if test "$alsa_prefix" != "" ; then
+ fi
+ 
+ dnl add the alsa library
+-ALSA_LIBS="$ALSA_LIBS -lasound -lm $LIBDL -lpthread"
++ALSA_LIBS="$ALSA_LIBS -lasound -lm $LIBDL"
+ LIBS="$ALSA_LIBS $LIBS"
+ AC_MSG_RESULT($ALSA_LIBS)
+ 
+-- 
+2.42.0
+

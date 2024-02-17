@@ -219,9 +219,12 @@ function(apply_git_patches target base_hash)
   endif()
 endfunction()
 
+apply_git_patches(alsa-lib d8ce72f2561f23293ad0d98d30060c4a80a74c36)
+
 add_autotools_project(freetype PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh)
 add_autotools_project(libtasn1 PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh
                       CONFIGURE_FLAGS --disable-doc)
+add_autotools_project(alsa-lib PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh)
 add_autotools_project(p11-kit 
                       PRE_CONFIGURE_COMMAND test -e ./configure || NOCONFIGURE=1 ./autogen.sh
                       CONFIGURE_FLAGS --without-libffi
