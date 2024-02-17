@@ -37,3 +37,6 @@
 [submodule "alsa-lib"]
 	path = alsa-lib
 	url = https://github.com/alsa-project/alsa-lib.git
+[submodule "alsa-oboe"]
+	path = alsa-oboe
+	url = git@github.com:cassia-org/alsa-oboe.git
