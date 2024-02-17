@@ -155,6 +155,70 @@ function(add_copy_command source destination)
                      DEPENDS ${source})
 endfunction()
 
+function(apply_git_patches target base_hash)
+  set(PATCHES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/patches/${target})
+  file(GLOB PATCHES ${PATCHES_DIR}/*.patch)
+
+  if (NOT PATCHES)
+    message(FATAL_ERROR "No patches found for the repository ${target}")
+  endif()
+
+  # Calculate the patch string
+  set(PATCH_STRING "")
+  foreach(PATCH IN LISTS PATCHES)
+    execute_process(COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} hash-object -w ${PATCH}
+                    OUTPUT_VARIABLE PATCH_HASH
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(PATCH_STRING "${PATCH_STRING}${PATCH_HASH}\n")
+  endforeach()
+
+  # Get the latest commit message
+  execute_process(COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} log -1 --pretty=%B
+                  OUTPUT_VARIABLE COMMIT_MESSAGE
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} log -1 --pretty=%an
+                  OUTPUT_VARIABLE COMMIT_AUTHOR_NAME
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} log -1 --pretty=%ae
+                  OUTPUT_VARIABLE COMMIT_AUTHOR_EMAIL
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  if (COMMIT_AUTHOR_NAME STREQUAL "CMake" AND COMMIT_AUTHOR_EMAIL STREQUAL "cmake@localhost")
+    if (COMMIT_MESSAGE STREQUAL "CMake Patch\n${PATCH_STRING}")
+      # The existing commit is the expected one
+      return()
+    endif()
+
+    # The existing commit is not the expected one, reset the repository to the base hash and apply the patches again
+    execute_process(COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} reset --hard ${base_hash}
+                    OUTPUT_VARIABLE RESET_RESULT
+                    ERROR_VARIABLE RESET_RESULT
+                    RESULT_VARIABLE RESET_RESULT_CODE)
+    if (RESET_RESULT_CODE)
+      message(FATAL_ERROR "Failed to reset the repository ${target} to the base hash ${base_hash}: ${RESET_RESULT}")
+    endif()
+  endif()
+
+  # Ensure the repository is at the base hash
+  execute_process(COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} rev-parse HEAD
+                  OUTPUT_VARIABLE HEAD_HASH
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  if (NOT HEAD_HASH STREQUAL base_hash)
+    message(FATAL_ERROR "The repository ${target} is not at the expected base hash ${base_hash} but at ${HEAD_HASH}")
+  endif()
+
+  # Commit the changes as a new commit
+  execute_process(COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} apply --index ${PATCHES}
+                  COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} commit -m "CMake Patch\n${PATCH_STRING}" --author="CMake <cmake@localhost>"
+                  RESULT_VARIABLE COMMIT_RESULT
+                  OUTPUT_QUIET)
+
+  if (COMMIT_RESULT)
+    message(FATAL_ERROR "Failed to commit the patches to the repository ${target}")
+  endif()
+endfunction()
+
 add_autotools_project(freetype PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh)
 add_autotools_project(libtasn1 PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh
                       CONFIGURE_FLAGS --disable-doc)
