@@ -49,6 +49,7 @@ in
       python3Packages.python
       python3Packages.mako
       python3Packages.ply
+      python3Packages.setuptools
       libev
       freetype
       xorg.libX11
