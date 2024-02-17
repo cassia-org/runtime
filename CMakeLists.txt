@@ -81,6 +81,8 @@ set(COMPILER_SETTINGS
   "x86_64_CC=${MINGW_SYSROOT_PATH}/bin/clang"
 )
 
+set(ACLOCAL_ENV "ACLOCAL_PATH=${OUTPUT_PREFIX_DIR}/share/aclocal:$ENV{ACLOCAL_PATH}")
+
 # Executes the appended program with MinGW compilers added to path
 set(MINGW_COMMAND "${CMAKE_COMMAND}" -E env "PATH=${MINGW_SYSROOT_PATH}/bin:$ENV{PATH}")
 
