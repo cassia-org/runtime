@@ -242,7 +242,7 @@ add_autotools_project(wine
                       BUILD_ALWAYS
                       PRE_CONFIGURE_COMMAND autoreconf -i
                       CONFIGURE_FLAGS --enable-archs=${DLL_BUILD_ARCHITECTURES} ${wine_EXTRA_CONFIGURE_FLAGS}
-                      DEPENDS gnutls freetype)
+                      DEPENDS gnutls freetype alsa-lib)
 add_dll_meson_project(mesa
                       CONFIGURE_FLAGS -Dgallium-drivers=zink
                       BUILD_ALWAYS)
