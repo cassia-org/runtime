@@ -23,6 +23,8 @@ set(WINETOOLS_PATH "" CACHE PATH "Path to wine tools built for the host (when cr
 set(MINGW_SYSROOT_PATH "" CACHE PATH "Path to a mingw compiler sysroot built for the host")
 set(DLL_BUILD_ARCHITECTURES "" CACHE STRING "List of DLL architectures to build")
 
+set(ENV{CMAKE_EXPORT_COMPILE_COMMANDS} ON) # Generate compile_commands.json when possible
+
 if (CMAKE_CXX_FLAGS)
     # These flags break compilation of wine and libtasn1 and are set implictly by the android toolchain file
     string(REPLACE "-fstack-protector-strong" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
@@ -259,7 +261,8 @@ if (ANDROID)
     LOG_BUILD           TRUE
     LOG_INSTALL         TRUE
     BUILD_ALWAYS        TRUE
-    CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON ${EXTPROJ_CMAKE_ARGS}
+    CMAKE_ARGS          -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=ON -DGEN_INSTALL_TARGET=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ${EXTPROJ_CMAKE_ARGS}
+  )
   )
 
   add_copy_command(${CMAKE_CURRENT_SOURCE_DIR}/metadata.json ${OUTPUT_PREFIX_DIR}/metadata.json)
@@ -281,3 +284,12 @@ if ("aarch64-w64-mingw32" IN_LIST MINGW_DLL_BUILD_TRIPLES)
     BUILD_ALWAYS        TRUE
   )
 endif()
+
+# Merge the compilation databases into a single file
+add_custom_target(compile_commands
+  ALL
+  COMMAND find ${CMAKE_BINARY_DIR} -iname "compile_commands.json" | xargs jq -s 'map(.[])' > compile_commands.json
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  COMMENT "Merging compilation databases"
+  BYPRODUCTS compile_commands.json
+)

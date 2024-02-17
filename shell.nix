@@ -53,6 +53,7 @@ in
       freetype
       xorg.libX11
       vulkan-headers
+      jq
     ];
     depsBuildBuild = with pkgs; [
       ninja
