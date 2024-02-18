@@ -228,7 +228,9 @@ apply_git_patches(alsa-lib d8ce72f2561f23293ad0d98d30060c4a80a74c36)
 add_autotools_project(freetype PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh)
 add_autotools_project(libtasn1 PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh
                       CONFIGURE_FLAGS --disable-doc)
-add_autotools_project(alsa-lib PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh)
+if (ANDROID)
+  add_autotools_project(alsa-lib PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh)
+endif()
 add_autotools_project(p11-kit 
                       PRE_CONFIGURE_COMMAND test -e ./configure || NOCONFIGURE=1 ./autogen.sh
                       CONFIGURE_FLAGS --without-libffi
@@ -242,11 +244,15 @@ add_autotools_project(gnutls
                       PRE_CONFIGURE_COMMAND test -e ./configure || ./bootstrap 
                       CONFIGURE_FLAGS --with-nettle-mini --with-included-unistring --disable-guile --disable-gost --enable-local-libopts --disable-tests --disable-doc
                       DEPENDS nettle libtasn1)
+set(wine_DEPENDS gnutls freetype)
+if (ANDROID)
+  list(APPEND wine_DEPENDS alsa-lib)
+endif()
 add_autotools_project(wine
                       BUILD_ALWAYS
                       PRE_CONFIGURE_COMMAND autoreconf -i
                       CONFIGURE_FLAGS --enable-archs=${DLL_BUILD_ARCHITECTURES} ${wine_EXTRA_CONFIGURE_FLAGS}
-                      DEPENDS gnutls freetype alsa-lib)
+                      DEPENDS ${wine_DEPENDS})
 add_dll_meson_project(mesa
                       CONFIGURE_FLAGS -Dgallium-drivers=zink
                       BUILD_ALWAYS)
