@@ -1,0 +1,21 @@
+From b598e14e9916f7d0e886fb902834c51bc5287623 Mon Sep 17 00:00:00 2001
+From: Mark Collins <pixelyion@protonmail.com>
+Date: Sat, 24 Feb 2024 18:26:33 +0000
+Subject: [PATCH] build: Remove `exe_wrapper` in MinGW64 crossfile
+
+---
+ build/cross_file_mingw64.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/build/cross_file_mingw64.txt b/build/cross_file_mingw64.txt
+index 40c0b1f..5fdd1fb 100644
+--- a/build/cross_file_mingw64.txt
++++ b/build/cross_file_mingw64.txt
+@@ -15,4 +15,3 @@ ar = 'x86_64-w64-mingw32-ar'
+ strip = 'x86_64-w64-mingw32-strip'
+ pkgconfig = 'x86_64-w64-mingw32-pkg-config'
+ windres = 'x86_64-w64-mingw32-windres'
+-exe_wrapper = 'wine'
+-- 
+2.42.0
+
