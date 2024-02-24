@@ -55,6 +55,7 @@ in
       xorg.libX11
       vulkan-headers
       jq
+      perl
     ];
     depsBuildBuild = with pkgs; [
       ninja
