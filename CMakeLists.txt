@@ -271,6 +271,9 @@ function(apply_git_patches target base_hash)
 endfunction()
 
 apply_git_patches(alsa-lib d8ce72f2561f23293ad0d98d30060c4a80a74c36)
+apply_git_patches(gnutls 03029907f374c4707336215bc7cb722c92324c03)
+apply_git_patches(libtasn1 2b7ee166f031bea63c5e7badcedc69f1cea69c89)
+apply_git_patches(nettle d2cc9b95b50440c331ee143312309951a7e8d7ca)
 
 add_autotools_project(freetype PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh)
 add_autotools_project(libtasn1 PRE_CONFIGURE_COMMAND test -e ./configure || ./autogen.sh
