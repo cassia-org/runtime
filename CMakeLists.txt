@@ -250,9 +250,18 @@ function(apply_git_patches target base_hash)
     message(FATAL_ERROR "The repository ${target} is not at the expected base hash ${base_hash} but at ${HEAD_HASH}")
   endif()
 
-  # Commit the changes as a new commit
+  # Apply patches and commit the changes
   execute_process(COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} apply --index ${PATCHES}
-                  COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} commit -m "CMake Patch\n${PATCH_STRING}" --author="CMake <cmake@localhost>"
+                  RESULT_VARIABLE APPLY_RESULT
+                  OUTPUT_QUIET)
+
+  if (APPLY_RESULT)
+    message(FATAL_ERROR "Failed to apply the patches to the repository ${target}")
+  endif()
+
+  set(ENV{GIT_COMMITTER_NAME} "CMake")
+  set(ENV{GIT_COMMITTER_EMAIL} "cmake@localhost")
+  execute_process(COMMAND git -C ${CMAKE_CURRENT_SOURCE_DIR}/${target} commit -m "CMake Patch\n${PATCH_STRING}" --author="CMake <cmake@localhost>"
                   RESULT_VARIABLE COMMIT_RESULT
                   OUTPUT_QUIET)
 
