@@ -152,13 +152,13 @@ function(add_autotools_project name)
 endfunction()
 
 function(add_dll_meson_project_intl name triple cross_file prefix build_always configure_flags)
-  if (${configure_flags} STREQUAL " ")
+  if ("${configure_flags}" STREQUAL " ")
     unset(configure_flags)
   endif()
   ExternalProject_Add(${name}_${triple}
     INSTALL_DIR         ${prefix}
     SOURCE_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/${name}
-    CONFIGURE_COMMAND   ${MINGW_COMMAND} meson setup --strip --buildtype release ${configure_flags} --cross-file=${cross_file} --prefix=<INSTALL_DIR> . <SOURCE_DIR>
+    CONFIGURE_COMMAND   ${MINGW_COMMAND} meson setup --reconfigure --strip --buildtype release ${configure_flags} --cross-file=${cross_file} --prefix=<INSTALL_DIR> . <SOURCE_DIR>
     BUILD_COMMAND       ${MINGW_COMMAND} meson compile
     INSTALL_COMMAND     ${MINGW_COMMAND} meson install --no-rebuild
     LOG_CONFIGURE       TRUE
@@ -187,7 +187,7 @@ function(add_dll_meson_project name)
                                ${DLL_TRIPLE_CROSS_FILE}
                                ${DLL_TRIPLE_PREFIX}
                                ${ARG_BUILD_ALWAYS}
-                               ${ARG_CONFIGURE_FLAGS})
+                               "${ARG_CONFIGURE_FLAGS}")
   endforeach()
 endfunction()
 
