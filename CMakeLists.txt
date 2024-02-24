@@ -306,7 +306,7 @@ add_autotools_project(wine
                       CONFIGURE_FLAGS --enable-archs=${DLL_BUILD_ARCHITECTURES} ${wine_EXTRA_CONFIGURE_FLAGS}
                       DEPENDS ${wine_DEPENDS})
 add_dll_meson_project(mesa
-                      CONFIGURE_FLAGS -Dgallium-drivers=zink
+                      CONFIGURE_FLAGS --force-fallback-for=zlib -Dgallium-drivers=zink
                       BUILD_ALWAYS)
 add_dll_meson_project(dxvk
                       BUILD_ALWAYS)
