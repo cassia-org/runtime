@@ -192,9 +192,11 @@ function(add_dll_meson_project name)
 endfunction()
 
 function(add_copy_command source destination)
-  add_custom_command(OUTPUT ${destination}
-                     COMMAND ${CMAKE_COMMAND} -E copy ${source} ${destination}
-                     DEPENDS ${source})
+  get_filename_component(filename ${source} NAME)
+  add_custom_target(copy_${filename} ALL
+                    COMMAND ${CMAKE_COMMAND} -E copy ${source} ${destination}
+                    DEPENDS ${source}
+                    BYPRODUCTS ${destination})
 endfunction()
 
 function(apply_git_patches target base_hash)
